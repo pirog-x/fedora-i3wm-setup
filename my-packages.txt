@@ -1,0 +1,106 @@
+sudo dnf -y install 
+
+# Terminal & code
+zsh kitty neovim p7zip-plugins git mc htop neofetch
+
+# DE
+hyprland pavucontrol copyq
+
+# Apps
+sudo dnf config-manager --add-repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+
+sudo dnf -y install \
+tailscale gnome-tweaks wireguard-tools nemo gnome-pomodoro mpv openh264 flameshot
+
+# Gnome settings
+gsettings set org.gnome.desktop.input-sources xkb-options "['grp:alt_shift_toggle']"
+
+
+
+
+
+# Google chrome
+curl -o google-chrome.rpm https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo dnf -y install ./google-chrome.rpm
+
+# Install Telegram
+curl -o telegram.tar.xz $(curl -sI https://telegram.org/dl/desktop/linux | grep 'location' | awk '{print $2}' | tr -d '\r')
+sudo mkdir -p /opt/telegram 
+sudo chown -R $USER:$USER /opt/telegram
+sudo tar -xf telegram.tar.xz -C /opt/telegram
+cd /opt/telegram
+mv Telegram tmp
+mv tmp/* .
+rm -r tmp
+cd -
+sudo rm /bin/telegram
+sudo ln -s /opt/telegram/Telegram /bin/telegram
+
+
+# Intellij idea
+
+$.IIC[0].downloads.linux.link
+
+https://data.services.jetbrains.com/products/releases?code=IIU%2CIIC&latest=true&type=release
+
+
+
+
+
+# For i3wm
+
+dnf copr enable skidnik/clipmenu
+dnf copr enable leloubil/brillo
+
+sudo dnf -y install \
+i3 feh clipmenu unclutter polybar picom rofi kitty brillo xcalib flameshot nemo xsetroot xset papirus-icon-theme NetworkManager-tui xclip cheese wireshark xinput xev dunst obs-studio maven telnet grub2-efi-x64-modules
+
+
+systemctl --user enable --now clipmenud
+[/etc/udev/rules.d/backlight.rules]: {
+RUN+="/bin/chgrp wheel /sys/class/backlight/amdgpu_bl1/brightness"
+RUN+="/bin/chmod g+w /sys/class/backlight/amdgpu_bl1/brightness"
+}
+
+
+# Install PyCharm
+
+```bash
+#!/bin/bash
+
+if [ 0 -ne $(id -u) ]; then 
+    exec sudo -- "$0"
+fi
+
+mkdir -p /tmp/pycharm
+cd /tmp/pycharm
+
+pycharm_redirect_link=$(curl -s 'https://data.services.jetbrains.com/products/releases?code=PCP&latest=true&type=release' | jq -r '.PCP[0].downloads.linux.link')
+pycharm_download_link=$(curl -Is $pycharm_redirect_link | grep 'location' | awk '{print $2}' | tr -d '\r')
+pycharm_file="${pycharm_download_link##*/}"
+echo "PyCharm version is: $pycharm_file"
+echo "Fetching..."
+curl -so $pycharm_file $pycharm_download_link
+
+echo "Installing..."
+tar -xzf $pycharm_file -C /opt
+cd /opt
+mv $(ls -d pycharm*) pycharm
+ln -s /opt/pycharm/bin/pycharm.sh /bin/pycharm
+
+echo "Cleaning..."
+rm -rf /tmp/pycharm
+echo "Done!"
+```
+
+# Synaptics touchpad
+https://rpmfind.net/linux/opensuse/tumbleweed/repo/oss/x86_64/xf86-input-synaptics-1.9.2-2.2.x86_64.rpm
+
+# Docker
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.add-repo
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo dnf install docker-compose
+sudo systemctl start docker
+dockerd-rootless-setuptool.sh install
+
