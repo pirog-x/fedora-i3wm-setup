@@ -104,3 +104,7 @@ sudo dnf install docker-compose
 sudo systemctl start docker
 dockerd-rootless-setuptool.sh install
 
+
+
+# To accelerate vlc video playing
+sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
